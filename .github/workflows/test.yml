@@ -40,11 +40,12 @@ jobs:
     #   with:
     #     filename: coverage.out
 
-    - name: Pull new module version
-      uses: andrewslotin/go-proxy-pull-action@v1.0.3
+    # - name: Pull new module version
+    #   uses: andrewslotin/go-proxy-pull-action@v1.0.3
 
-    # - name: Publish doc to go.dev packages
-    #   run: |
-    #     git pull
-    #     export latest="$(git describe --tags `git rev-list --tags --max-count=1`)"
-    #     curl https://proxy.golang.org/github.com/github.com/weakpixel/tfcli/@v/v0.0.3.info
+    - name: Publish doc to go.dev packages
+      run: |
+        go get -u github.com/weakpixel/tfcli
+        # git pull
+        # export latest="$(git describe --tags `git rev-list --tags --max-count=1`)"
+        # curl https://proxy.golang.org/github.com/weakpixel/tfcli/@v/v0.0.3.info
