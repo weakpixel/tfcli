@@ -41,7 +41,7 @@ jobs:
         filename: coverage.out
 
     - name: Pull new module version
-      uses: andrewslotin/go-proxy-pull-action@master
+      uses: andrewslotin/go-proxy-pull-action@v1.0.3
 
     # - name: Publish doc to go.dev packages
     #   run: |
