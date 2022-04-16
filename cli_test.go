@@ -115,7 +115,7 @@ func TestGetModule(t *testing.T) {
 }
 
 // Note: Test is skipped if terraform executable cannot be found
-func TestCliMock(t *testing.T) {
+func TestCli(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip()
 	}

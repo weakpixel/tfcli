@@ -50,7 +50,11 @@ func downloadTerraform(dir, version string, force bool) (string, error) {
 		return "", err
 	}
 	file := filepath.Join(dir, version)
+
 	tffile := filepath.Join(file, "terraform")
+	if runtime.GOOS == "windows" {
+		tffile = filepath.Join(file, "terraform.exe")
+	}
 
 	if fileExists(tffile) && !force {
 		return tffile, nil
