@@ -106,7 +106,9 @@ func TestGetModule(t *testing.T) {
 	}
 	tmpDir := t.TempDir()
 	out := &bytes.Buffer{}
-	tf := New(tfbin, tmpDir, out, out)
+	tf := New(tfbin, tmpDir)
+	tf.SetStderr(out)
+	tf.SetStdout(out)
 	err = tf.GetModule("weakpixel/test-module/tfcli", "~> 0.0.1")
 	if !assert.NoError(t, err) {
 		logBuffer(t, out)
@@ -135,7 +137,9 @@ func TestCli(t *testing.T) {
 		assert.FailNow(t, "Cannot create main.tf")
 	}
 	out := &bytes.Buffer{}
-	tf := New(tfbin, tmpDir, out, out)
+	tf := New(tfbin, tmpDir)
+	tf.SetStderr(out)
+	tf.SetStdout(out)
 	tf.WithEnv(map[string]string{
 		"TF_VAR_myvar_from_env": "env_value",
 	})

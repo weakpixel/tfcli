@@ -27,6 +27,12 @@ type Terraform interface {
 	WithEnv(env map[string]string)
 	ConfigFilePath() string
 	Version() (string, error)
+	SetStdout(stdout io.Writer) Terraform
+	Stderr() io.Writer
+	Stdout() io.Writer
+	SetStderr(stderr io.Writer) Terraform
+
+	SetDir(dir string) Terraform
 }
 
 // Version version
@@ -39,18 +45,12 @@ type Version struct {
 // 		dir - Working directory used for terraform execution
 // 		stdout - default stdout for terraform execution
 // 		stderr - default stderr for terraform execution
-func New(tfBin, dir string, stdout io.Writer, stderr io.Writer) Terraform {
-	if stdout == nil {
-		stdout = io.Discard
-	}
-	if stderr == nil {
-		stdout = io.Discard
-	}
+func New(tfBin, dir string) Terraform {
 	logrus.Debugf("New Terraform Client. Executable: '%s', Working Dir: '%s'", tfBin, dir)
 	return &terraform{
 		command: filepath.FromSlash(tfBin),
-		stdout:  stdout,
-		stderr:  stderr,
+		stdout:  io.Discard,
+		stderr:  io.Discard,
 		dir:     filepath.FromSlash(dir),
 	}
 }
@@ -64,6 +64,29 @@ type terraform struct {
 	vars        map[string]string
 	env         map[string]string
 	credentials []RegistryCredential
+}
+
+func (t *terraform) Stderr() io.Writer {
+	return t.stderr
+}
+
+func (t *terraform) Stdout() io.Writer {
+	return t.stdout
+}
+
+func (t *terraform) SetStdout(stdout io.Writer) Terraform {
+	t.stdout = stdout
+	return t
+}
+
+func (t *terraform) SetStderr(stderr io.Writer) Terraform {
+	t.stderr = stderr
+	return t
+}
+
+func (t *terraform) SetDir(dir string) Terraform {
+	t.dir = dir
+	return t
 }
 
 func (t *terraform) Dir() string {
