@@ -29,7 +29,7 @@ func TestTerraformDownload(t *testing.T) {
 	tftmp := t.TempDir()
 	tf := New(file, tftmp, nil, nil)
 	tf.WithVars(map[string]string{
-		"string-var": "string var",
+		"string_var": "string var",
 	})
 	ver, err := tf.Version()
 	must(t, err)
