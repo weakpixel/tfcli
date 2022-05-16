@@ -161,6 +161,9 @@ func (t *terraform) Version() (string, error) {
 // private
 
 func (t *terraform) writeConfig() error {
+	if t.credentials == nil || len(t.credentials) == 0 {
+		return nil
+	}
 	err := writeTerraformConfig(t.ConfigFilePath(), t.credentials)
 	if err != nil {
 		return fmt.Errorf("cannot configure terraform registry credentials: %s", err)
