@@ -25,8 +25,14 @@ type Terraform interface {
 	WithRegistry(credentials []RegistryCredential)
 	GetModule(moduleSource, version string) error
 	WithBackendVars(backendVars map[string]string)
-	WithVars(backendVars map[string]string)
+	BackendVars() map[string]string
+	AppendBackendVars(backendVars map[string]string)
+	WithVars(vars map[string]string)
+	Vars() map[string]string
+	AppendVars(vars map[string]string)
 	WithEnv(env map[string]string)
+	Env() map[string]string
+	AppendEnv(env map[string]string)
 	ConfigFilePath() string
 	Version() (string, error)
 	SetStdout(stdout io.Writer) Terraform
@@ -50,10 +56,13 @@ type Version struct {
 func New(tfBin, dir string) Terraform {
 	logrus.Debugf("New Terraform Client. Executable: '%s', Working Dir: '%s'", tfBin, dir)
 	return &terraform{
-		command: filepath.FromSlash(tfBin),
-		stdout:  io.Discard,
-		stderr:  io.Discard,
-		dir:     filepath.FromSlash(dir),
+		command:     filepath.FromSlash(tfBin),
+		stdout:      io.Discard,
+		stderr:      io.Discard,
+		dir:         filepath.FromSlash(dir),
+		backendVars: map[string]string{},
+		vars:        map[string]string{},
+		env:         map[string]string{},
 	}
 }
 
@@ -121,14 +130,44 @@ func (t *terraform) WithBackendVars(backendVars map[string]string) {
 	t.backendVars = backendVars
 }
 
+func (t *terraform) AppendBackendVars(backendVars map[string]string) {
+	for k, v := range backendVars {
+		t.backendVars[k] = v
+	}
+}
+
+func (t *terraform) BackendVars() map[string]string {
+	return t.backendVars
+}
+
 // WithVars sets terraform variables for apply/destroy
 func (t *terraform) WithVars(vars map[string]string) {
 	t.vars = vars
 }
 
+func (t *terraform) Vars() map[string]string {
+	return t.vars
+}
+
+func (t *terraform) AppendVars(vars map[string]string) {
+	for k, v := range vars {
+		t.vars[k] = v
+	}
+}
+
 // WithEnv sets envrionment variables for terraform execution
 func (t *terraform) WithEnv(env map[string]string) {
 	t.env = env
+}
+
+func (t *terraform) AppendEnv(env map[string]string) {
+	for k, v := range env {
+		t.env[k] = v
+	}
+}
+
+func (t *terraform) Env() map[string]string {
+	return t.env
 }
 
 func (t *terraform) Init() error {

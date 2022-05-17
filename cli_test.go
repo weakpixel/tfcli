@@ -115,6 +115,43 @@ func TestGetModule(t *testing.T) {
 	}
 }
 
+func TestCliAppendFn(t *testing.T) {
+
+	expected := map[string]string{
+		"A": "a",
+		"B": "b",
+	}
+
+	tf := New("", "")
+	tf.AppendBackendVars(map[string]string{
+		"A": "a",
+	})
+	tf.AppendBackendVars(map[string]string{
+		"B": "b",
+	})
+
+	assert.Equal(t, expected, tf.BackendVars())
+
+	tf.AppendVars(map[string]string{
+		"A": "a",
+	})
+	tf.AppendVars(map[string]string{
+		"B": "b",
+	})
+
+	assert.Equal(t, expected, tf.Vars())
+
+	tf.AppendEnv(map[string]string{
+		"A": "a",
+	})
+	tf.AppendEnv(map[string]string{
+		"B": "b",
+	})
+
+	assert.Equal(t, expected, tf.Env())
+
+}
+
 // Note: Test is skipped if terraform executable cannot be found
 func TestCli(t *testing.T) {
 	if runtime.GOOS == "windows" {
