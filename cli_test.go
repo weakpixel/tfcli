@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -132,7 +131,7 @@ func TestCli(t *testing.T) {
 		assert.FailNow(t, "Cannot create tmp dir")
 	}
 	defer os.RemoveAll(tmpDir)
-	err = ioutil.WriteFile(path.Join(tmpDir, "main.tf"), []byte(testfile), 0644)
+	err = ioutil.WriteFile(filepath.Join(tmpDir, "main.tf"), []byte(testfile), 0644)
 	if !assert.NoError(t, err) {
 		assert.FailNow(t, "Cannot create main.tf")
 	}
@@ -156,6 +155,20 @@ func TestCli(t *testing.T) {
 	if !assert.NoError(t, err) {
 		logBuffer(t, out)
 		assert.FailNow(t, "init failed")
+	}
+
+	planfile := filepath.Join(tmpDir, "plan.json")
+
+	err = tf.Plan(planfile)
+	if !assert.NoError(t, err) {
+		logBuffer(t, out)
+		assert.FailNow(t, "plan failed")
+	}
+
+	err = tf.ApplyWithPlan(planfile)
+	if !assert.NoError(t, err) {
+		logBuffer(t, out)
+		assert.FailNow(t, "apply with plan failed")
 	}
 
 	err = tf.Apply()

@@ -17,6 +17,8 @@ import (
 type Terraform interface {
 	Init() error
 	Apply() error
+	ApplyWithPlan(planFile string) error
+	Plan(planFile string) error
 	Destroy() error
 	Output() (map[string]string, error)
 	Dir() string
@@ -142,6 +144,21 @@ func (t *terraform) Init() error {
 func (t *terraform) Apply() error {
 	varsArgs := mapToArgs(t.vars, "var")
 	cmd := t.newCommand([]string{"apply", "-no-color", "-input=false", "-auto-approve"}, varsArgs)
+	return t.run(cmd)
+}
+
+func (t *terraform) ApplyWithPlan(planFile string) error {
+	varsArgs := mapToArgs(t.vars, "var")
+	cmd := t.newCommand([]string{"apply", "-no-color", "-input=false", "-auto-approve"}, varsArgs)
+	return t.run(cmd)
+}
+
+func (t *terraform) Plan(planFile string) error {
+	varsArgs := mapToArgs(t.vars, "var")
+	if planFile != "" {
+		varsArgs = append(varsArgs, "-out", planFile)
+	}
+	cmd := t.newCommand([]string{"plan", "-no-color", "-input=false"}, varsArgs)
 	return t.run(cmd)
 }
 
